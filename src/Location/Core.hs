@@ -20,6 +20,7 @@ currentPosition = unsafePerformIO (IORefs.newIORef (Geo.Geodetic (dms 37 48 15.7
 parseCoords :: String -> Maybe (Geo.Geodetic Geo.WGS84)
 parseCoords = Geo.readGroundPosition Geo.WGS84 
 
+
 -- 2018-11-05 - punting on this.
 -- maybeSetAltitude defaults to assuming altitudes are in metres.
 -- maybeSetAltitude :: Maybe Double -> Maybe (Geo.Geodetic Geo.WGS84) -> Maybe (Geo.Geodetic Geo.WGS84)
@@ -32,3 +33,16 @@ data Coordinates = Coordinates {
     , longitude :: Double
     , altitude :: Double
 }
+
+newPosition :: Double -> Double -> Double -> Geo.Geodetic Geo.WGS84
+newPosition lat lon alt = Geo.Geodetic (lat *~ degree) (lon *~ degree) (alt *~ metre) Geo.WGS84
+
+-- TODO: do this without unsafePerformIO
+getCurrentPosition :: Geo.Geodetic Geo.WGS84
+getCurrentPosition = unsafePerformIO $ IORefs.readIORef currentPosition
+
+-- TODO: do this without unsafePerformIO
+setCurrentPosition :: Double -> Double -> Double -> Geo.Geodetic Geo.WGS84
+setCurrentPosition lat lon alt =  unsafePerformIO $ do 
+  IORefs.writeIORef currentPosition (newPosition lat lon alt)
+  IORefs.readIORef currentPosition
