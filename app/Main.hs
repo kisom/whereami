@@ -1,6 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Lib
+import qualified Location.API as API
+import Web.Scotty
 
 main :: IO ()
-main = someFunc
+main = do
+  scotty 4000 $ do
+    get "/coordinates" $ API.getCoordinates

@@ -1,48 +1,43 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Location.Core where
 
-import Data.IORef as IORefs
-import Geodetics.Altitude as Alt
-import Geodetics.Geodetic as Geo
--- import Numeric.Units.Dimensional.Prelude (meter, (*~))
-import Numeric.Units.Dimensional.Prelude
-import qualified Prelude as P
+import Data.Aeson (defaultOptions, FromJSON, genericToEncoding, ToJSON, toEncoding)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import GHC.Generics
 import System.IO.Unsafe (unsafePerformIO)
-
--- | Degrees, minutes and seconds into radians.  Copied from the
--- | tests for the geodetics package.
-dms :: Int -> Int -> Double -> Dimensionless Double
-dms d m s = fromIntegral d *~ degree + fromIntegral m *~ arcminute + s *~ arcsecond
-
--- TODO: figure out how to do this while still retaining safety.
-currentPosition :: IORefs.IORef (Geo.Geodetic Geo.WGS84)
-currentPosition = unsafePerformIO (IORefs.newIORef (Geo.Geodetic (dms 37 48 15.7068) (dms 22 16 15.9996) (9 *~ metre) Geo.WGS84))
-
-parseCoords :: String -> Maybe (Geo.Geodetic Geo.WGS84)
-parseCoords = Geo.readGroundPosition Geo.WGS84 
-
-
--- 2018-11-05 - punting on this.
--- maybeSetAltitude defaults to assuming altitudes are in metres.
--- maybeSetAltitude :: Maybe Double -> Maybe (Geo.Geodetic Geo.WGS84) -> Maybe (Geo.Geodetic Geo.WGS84)
--- maybeSetAltitude Nothing pos = pos
--- maybeSetAltitude _ Nothing = Nothing
--- maybeSetAltitude (Just alt) (Just pos) = Nothing -- Alt.setAltitude (alt *~ meter) (Just pos)
 
 data Coordinates = Coordinates {
       latitude :: Double
     , longitude :: Double
     , altitude :: Double
-}
+} deriving (Generic, Read, Show)
 
-newPosition :: Double -> Double -> Double -> Geo.Geodetic Geo.WGS84
-newPosition lat lon alt = Geo.Geodetic (lat *~ degree) (lon *~ degree) (alt *~ metre) Geo.WGS84
+instance ToJSON Coordinates where
+    toEncoding = genericToEncoding defaultOptions
 
--- TODO: do this without unsafePerformIO
-getCurrentPosition :: Geo.Geodetic Geo.WGS84
-getCurrentPosition = unsafePerformIO $ IORefs.readIORef currentPosition
+instance FromJSON Coordinates
 
--- TODO: do this without unsafePerformIO
-setCurrentPosition :: Double -> Double -> Double -> Geo.Geodetic Geo.WGS84
-setCurrentPosition lat lon alt =  unsafePerformIO $ do 
-  IORefs.writeIORef currentPosition (newPosition lat lon alt)
-  IORefs.readIORef currentPosition
+emptyCoordinates :: Coordinates
+emptyCoordinates = Coordinates 0.0 0.0 0.0
+
+-- TODO: remove this unsafePerformIO. The problem is that this has to be constructed at
+-- startup, and there's no way to do 
+currentPosition :: IORef Coordinates
+currentPosition = unsafePerformIO . newIORef $ emptyCoordinates
+
+getCurrentPosition :: IO Coordinates
+getCurrentPosition = readIORef currentPosition
+
+setCurrentPosition :: Double -> Double -> Double -> IO Coordinates
+setCurrentPosition lat lon alt = writeIORef currentPosition (Coordinates lat lon alt) >> readIORef currentPosition
+
+-- toCoordinates :: Geo.Geodetic Geo.WGS84 -> IO Coordinates
+-- toCoordinates (Geo.Geodetic lat lon alt Geo.WGS84) = do
+--     lat' <- toExactRational $ exactValue lat
+--     return $ Coordinates lat' 0.0 0.0
+-- 
+-- return $ Coordinates lat' lon' alt'
+--   where lat' = fromRational $ exactValue lat
+--         lon' = fromIntegral lon
+-- 	alt' = fromIntegral alt
