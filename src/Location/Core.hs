@@ -31,13 +31,3 @@ getCurrentPosition = readIORef currentPosition
 
 setCurrentPosition :: Double -> Double -> Double -> IO Coordinates
 setCurrentPosition lat lon alt = writeIORef currentPosition (Coordinates lat lon alt) >> readIORef currentPosition
-
--- toCoordinates :: Geo.Geodetic Geo.WGS84 -> IO Coordinates
--- toCoordinates (Geo.Geodetic lat lon alt Geo.WGS84) = do
---     lat' <- toExactRational $ exactValue lat
---     return $ Coordinates lat' 0.0 0.0
--- 
--- return $ Coordinates lat' lon' alt'
---   where lat' = fromRational $ exactValue lat
---         lon' = fromIntegral lon
--- 	alt' = fromIntegral alt
