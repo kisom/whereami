@@ -9,3 +9,5 @@ main :: IO ()
 main = do
   scotty 4000 $ do
     get "/coordinates" $ API.getCoordinates
+    post "/coordinates" $ API.postCoordinates
+    notFound $ API.notFound

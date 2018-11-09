@@ -3,7 +3,9 @@
 module Location.Core where
 
 import Data.Aeson (defaultOptions, FromJSON, genericToEncoding, ToJSON, toEncoding)
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+-- import Data.IORef (IORef, newIORef, readIORef, atomicWriteIORef)
+import Control.Concurrent.STM
+import Control.Concurrent.STM.TVar
 import GHC.Generics
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -21,13 +23,19 @@ instance FromJSON Coordinates
 emptyCoordinates :: Coordinates
 emptyCoordinates = Coordinates 0.0 0.0 0.0
 
+oaklandCoordinates :: Coordinates
+oaklandCoordinates = Coordinates 37.8044 (-122.2711) 13.0
+
 -- TODO: remove this unsafePerformIO. The problem is that this has to be constructed at
 -- startup, and there's no way to do 
-currentPosition :: IORef Coordinates
-currentPosition = unsafePerformIO . newIORef $ emptyCoordinates
+currentPosition :: TVar Coordinates
+currentPosition = unsafePerformIO $ newTVarIO emptyCoordinates
 
 getCurrentPosition :: IO Coordinates
-getCurrentPosition = readIORef currentPosition
+getCurrentPosition = readTVarIO currentPosition
 
 setCurrentPosition :: Double -> Double -> Double -> IO Coordinates
-setCurrentPosition lat lon alt = writeIORef currentPosition (Coordinates lat lon alt) >> readIORef currentPosition
+setCurrentPosition lat lon alt = (atomically $ writeTVar currentPosition (Coordinates lat lon alt)) >> readTVarIO currentPosition
+
+setCurrentCoordinates :: Coordinates -> IO Coordinates
+setCurrentCoordinates coordinates = (atomically $ writeTVar currentPosition coordinates) >> readTVarIO currentPosition

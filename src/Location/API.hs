@@ -25,3 +25,11 @@ getCoordinates :: ActionM ()
 getCoordinates = json $ Response True coordinates ""
   where coordinates = unsafePerformIO $ Core.getCurrentPosition 
 
+postCoordinates :: ActionM ()
+postCoordinates = do 
+    coordinates <- jsonData :: ActionM Core.Coordinates
+    json . unsafePerformIO $ Core.setCurrentCoordinates coordinates
+    json $ Response True coordinates ""
+
+notFound :: ActionM ()
+notFound = json $ Response False Core.emptyCoordinates "route not found"
