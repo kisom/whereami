@@ -3,16 +3,20 @@
 
 module Location.API where
 
-import           Data.Aeson                  (FromJSON, ToJSON, defaultOptions,
-                                              genericToEncoding, toEncoding)
+import           Data.Aeson                     ( FromJSON
+                                                , ToJSON
+                                                , defaultOptions
+                                                , genericToEncoding
+                                                , toEncoding
+                                                )
 import           Data.SecureMem
-import           Data.Text.Lazy              (pack)
-import qualified Database.SQLite.Simple      as SQLite
+import           Data.Text.Lazy                 ( pack )
+import qualified Database.SQLite.Simple        as SQLite
 import           GHC.Generics
-import qualified Location.Core               as Core
-import qualified Location.DB                 as DB
-import           System.IO.Unsafe            (unsafePerformIO)
-import qualified System.Posix.Env.ByteString as Env
+import qualified Location.Core                 as Core
+import qualified Location.DB                   as DB
+import           System.IO.Unsafe               ( unsafePerformIO )
+import qualified System.Posix.Env.ByteString   as Env
 import           Web.Scotty
 
 data Response = Response
@@ -27,9 +31,9 @@ instance ToJSON Response where
 instance FromJSON Response
 
 authPassword :: SecureMem
-authPassword =
-  secureMemFromByteString . unsafePerformIO $
-  Env.getEnvDefault "WHEREAMI_PASS" "password"
+authPassword = secureMemFromByteString . unsafePerformIO $ Env.getEnvDefault
+  "WHEREAMI_PASS"
+  "password"
 
 getCoordinates :: SQLite.Connection -> ActionM ()
 getCoordinates conn = do
@@ -50,11 +54,10 @@ getCoordinatesText conn = do
   text . pack $ show coordinates
 
 getCoordinatesHTML :: SQLite.Connection -> ActionM ()
-getCoordinatesHTML conn
-    -- build page
- = do
+getCoordinatesHTML conn = do
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   file "page.html"
+    -- build page
 
 postCoordinates :: SQLite.Connection -> ActionM ()
 postCoordinates conn = do
