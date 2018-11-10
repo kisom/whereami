@@ -3,7 +3,12 @@
 
 module Location.API where
 
-import Data.Aeson (defaultOptions, FromJSON, genericToEncoding, ToJSON, toEncoding)
+import Data.Aeson (
+      defaultOptions
+    , FromJSON
+    , genericToEncoding
+    , ToJSON
+    , toEncoding)
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import GHC.Generics
 import qualified Location.Core as Core

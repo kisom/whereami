@@ -3,7 +3,6 @@
 module Location.Core where
 
 import Data.Aeson (defaultOptions, FromJSON, genericToEncoding, ToJSON, toEncoding)
--- import Data.IORef (IORef, newIORef, readIORef, atomicWriteIORef)
 import Control.Concurrent.STM
 import Control.Concurrent.STM.TVar
 import GHC.Generics
