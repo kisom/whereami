@@ -1,0 +1,14 @@
+# My server has an old version of docker-compose.
+version: "2"
+services:
+  whereami:
+    build:
+      context: .
+    image: whereami:0.1.0.0
+  ports:
+    - "8003:8003"
+  environment:
+    - WHEREAMI_USER=kyle
+    - WHEREAMI_PASS=
+    - WHEREAMI_DB=whereami.db
+    - WHEREAMI_PORT=8003
