@@ -9,3 +9,6 @@ $(TARGET): $(LIBSRC) $(MAINSRC)
 .PHONY: format
 format:
 	brittany --write-mode inplace $(LIBSRC) $(MAINSRC)
+
+deploy:
+	docker-compose up

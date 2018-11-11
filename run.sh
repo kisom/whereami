@@ -1,3 +1,4 @@
 #!/bin/sh
 
-stack build && stack "$@"
+STACK="stack --allow-different-user"
+$STACK build && $STACK "$@"
