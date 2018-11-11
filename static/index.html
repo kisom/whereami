@@ -23,6 +23,7 @@
         function getCurrentPosition() {
             request = new XMLHttpRequest();
             url = window.location.protocol + "//" + window.location.host + "/coordinates";
+            console.log('getCurrentPosition→'+url);
             request.open('GET', url, false);
             request.setRequestHeader('accept', 'text/plain');
             request.send();
@@ -66,6 +67,7 @@
         function sendCurrentLocation(coords) {
             request = new XMLHttpRequest();
             url = window.location.protocol + "//" + window.location.host + "/coordinates";
+            console.log('sendCurrentLocation'+url);
             request.open('POST', url, false);
             request.send(coords);
             message.innerHTML = "Location updated at " + Date.now();
