@@ -22,13 +22,15 @@
     
         function getCurrentPosition() {
             request = new XMLHttpRequest();
-            request.open('GET', '/coordinates', false);
+            url = window.location.protocol + "//" + window.location.host + "/coordinates";
+            request.open('GET', url, false);
             request.setRequestHeader('content-type', 'text/plain');
             request.send();
             currentLocation.innerHTML = request.responseText;
         }
         
         function setupUpdates() {
+            getCurrentPosition();
             if (navigator.geolocation) {
                 button = document.createElement("button")
                 button.innerHTML = "Update";
@@ -63,7 +65,8 @@
         
         function sendCurrentLocation(coords) {
             request = new XMLHttpRequest();
-            request.open('POST', 'http://127.0.0.1:4000/coordinates', false);
+            url = window.location.protocol + "//" + window.location.host + "/coordinates";
+            request.open('POST', url, false);
             request.send(coords);
             message.innerHTML = "Location updated at " + Date.now();
             getCurrentPosition();
