@@ -10,6 +10,7 @@ import qualified Network.Wai.Handler.Warp      as Warp
 import           Network.Wai.Middleware.Cors
 import           Network.Wai.Middleware.HttpAuth
 import           Network.Wai.Middleware.RequestLogger
+import           Network.Wai.Middleware.Static
 import qualified System.Environment            as Env
 import           Web.Scotty
 
@@ -29,19 +30,27 @@ getUser = do
 
 main :: IO ()
 main = do
+  -- Get all the configuration data needed.
   conn <- DB.setupDatabase
   user <- getUser
   putStrLn $ "User: " ++ user
   password <- API.getAuthPassword
   port     <- getPort
+
   scotty port $ do
+    -- Set up all the middleware.
     middleware logStdoutDev
     middleware simpleCors
+    middleware $ staticPolicy (addBase "assets")
     middleware $ basicAuth
       (\u p -> return $ u == pack user && secureMemFromByteString p == password)
       "Where am I?"
+
+    -- Define the routes.
     get "/coordinates" $ API.getCoordinates conn
     post "/coordinates" $ API.postCoordinates conn
     get "/" $ API.staticPage "static/index.html"
     notFound $ API.notFound
+
+  -- Cleanup.
   DB.shutdown conn

@@ -10,5 +10,11 @@ $(TARGET): $(LIBSRC) $(MAINSRC)
 format:
 	brittany --write-mode inplace $(LIBSRC) $(MAINSRC)
 
+.PHONY: deploy
 deploy:
 	docker-compose up -d && docker-compose logs -f
+
+# Honestly, only because I type make run out of habit.
+.PHONY: run
+run:
+	stack run

@@ -10,7 +10,10 @@ import           Data.Aeson                     ( FromJSON
                                                 )
 import           Database.SQLite.Simple.FromRow
 import           Database.SQLite.Simple.ToRow
+import           Data.Time.Zones.DB (TZLabel( America__Los_Angeles ))
 import           GHC.Generics
+
+
 
 northOrSouth :: Double -> String
 northOrSouth d = if d >= 0 then "N" else "S"
@@ -22,6 +25,10 @@ data Coordinates = Coordinates
   { latitude  :: Double
   , longitude :: Double
   , altitude  :: Double
+
+  -- Note: the UTC offset should be stored in the database as well, but for now
+  -- I'm going to keep this as is.
+  -- , timestamp :: Int 
   } deriving (Generic, Read)
 
 instance Show Coordinates where
