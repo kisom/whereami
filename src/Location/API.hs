@@ -54,9 +54,9 @@ getCoordinates conn = do
   acceptType <- header "Accept"
   case acceptType of
     Just ctype -> case ctype of
-      contentJSON -> getCoordinatesJSON conn
-      contentText -> getCoordinatesText conn
-      _           -> getCoordinatesHTML conn
+      "application/json" -> getCoordinatesJSON conn
+      "text/plain"       -> getCoordinatesText conn
+      _                  -> getCoordinatesHTML conn
     Nothing -> getCoordinatesHTML conn
 
 getCoordinatesJSON :: SQLite.Connection -> ActionM ()
