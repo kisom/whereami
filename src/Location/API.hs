@@ -83,4 +83,4 @@ notFound :: ActionM ()
 notFound = json $ Response False "route not found" Nothing
 
 staticPage :: FilePath -> ActionM ()
-staticPage path = setHeader contentType contentText >> (file path)
+staticPage path = setHeader contentType contentHTML >> (file path)
