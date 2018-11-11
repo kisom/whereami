@@ -51,8 +51,8 @@ getAuthPassword =
 
 getCoordinates :: SQLite.Connection -> ActionM ()
 getCoordinates conn = do
-  contentType <- header contentType
-  case contentType of
+  acceptType <- header "Accept"
+  case acceptType of
     Just ctype -> case ctype of
       contentJSON -> getCoordinatesJSON conn
       contentText -> getCoordinatesText conn
@@ -61,16 +61,19 @@ getCoordinates conn = do
 
 getCoordinatesJSON :: SQLite.Connection -> ActionM ()
 getCoordinatesJSON conn = do
+  liftAndCatchIO $ putStrLn "getCoordinatesJSON"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   json $ Response True "" (Just coordinates)
 
 getCoordinatesText :: SQLite.Connection -> ActionM ()
 getCoordinatesText conn = do
+  liftAndCatchIO $ putStrLn "getCoordinatesText"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   text . pack $ show coordinates
 
 getCoordinatesHTML :: SQLite.Connection -> ActionM ()
 getCoordinatesHTML conn = do
+  liftAndCatchIO $ putStrLn "getCoordinatesHTML"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   file "page.html"
     -- build page
