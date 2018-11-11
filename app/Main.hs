@@ -40,8 +40,8 @@ main = do
     middleware $ basicAuth
       (\u p -> return $ u == pack user && secureMemFromByteString p == password)
       "Where am I?"
-    get "/" $ API.staticPage "static/index.html"
     get "/coordinates" $ API.getCoordinates conn
     post "/coordinates" $ API.postCoordinates conn
+    get "/" $ API.staticPage "static/index.html"
     notFound $ API.notFound
   DB.shutdown conn
