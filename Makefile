@@ -11,4 +11,4 @@ format:
 	brittany --write-mode inplace $(LIBSRC) $(MAINSRC)
 
 deploy:
-	docker-compose up
+	docker-compose up -d && docker-compose logs -f
