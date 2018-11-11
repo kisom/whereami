@@ -44,15 +44,20 @@ instance ToJSON Response where
 instance FromJSON Response
 
 getAuthPassword :: IO SecureMem
-getAuthPassword = Env.getEnvDefault "WHEREAMI_PASS" "password" >>= return . secureMemFromByteString 
+getAuthPassword =
+  Env.getEnvDefault "WHEREAMI_PASS" "password"
+    >>= return
+    .   secureMemFromByteString
 
 getCoordinates :: SQLite.Connection -> ActionM ()
 getCoordinates conn = do
   contentType <- header contentType
   case contentType of
-    Just contentJSON -> getCoordinatesJSON conn
-    Just contentText -> getCoordinatesText conn
-    _                -> getCoordinatesHTML conn
+    Just ctype -> case ctype of
+      contentJSON -> getCoordinatesJSON conn
+      contentText -> getCoordinatesText conn
+      _           -> getCoordinatesHTML conn
+    Nothing -> getCoordinatesHTML conn
 
 getCoordinatesJSON :: SQLite.Connection -> ActionM ()
 getCoordinatesJSON conn = do

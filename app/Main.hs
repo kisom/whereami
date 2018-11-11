@@ -33,14 +33,12 @@ main = do
   user <- getUser
   putStrLn $ "User: " ++ user
   password <- API.getAuthPassword
-  port <- getPort
+  port     <- getPort
   scotty port $ do
     middleware logStdoutDev
     middleware simpleCors
     middleware $ basicAuth
-      (\u p ->
-        return $ u == pack user && secureMemFromByteString p == password
-      )
+      (\u p -> return $ u == pack user && secureMemFromByteString p == password)
       "Where am I?"
     get "/" $ API.staticPage "static/index.html"
     get "/coordinates" $ API.getCoordinates conn
