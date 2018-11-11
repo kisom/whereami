@@ -28,7 +28,6 @@ dependencies:
 - sqlite-simple >= 0.4.16 && < 0.5
 - text >= 1.2 && < 1.3
 - time >= 1.8 && < 2.0
-- time-exts >= 1.0 && < 2.0
 - unix >= 2.7 && < 3.0
 - wai-cors >= 0.2.5 && < 0.30
 - wai-extra > 3.0 && < 4.0

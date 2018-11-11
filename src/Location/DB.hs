@@ -4,7 +4,6 @@ module Location.DB where
 
 import           Data.Time.Clock.POSIX          ( getPOSIXTime )
 import           Database.SQLite.Simple        as SQLite
-import qualified Data.Time.Exts.Unix           as Time
 import qualified Location.Core                 as Core
 import qualified System.Environment            as Env
 

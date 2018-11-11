@@ -20,8 +20,6 @@ import qualified Location.DB                   as DB
 import qualified System.Posix.Env.ByteString   as Env
 import           Web.Scotty
 
-import           System.IO.Unsafe               ( unsafePerformIO )
-
 contentType :: Text
 contentType = "Content-Type"
 
