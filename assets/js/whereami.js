@@ -2,8 +2,6 @@ var message = document.getElementById("message");
 var currentLocation = document.getElementById("currentLocation");
 var updateButtonSpan = document.getElementById("updateButton");
 
-var defaultTimeZone = "America/Los_Angeles";
-
 function getCurrentPosition() {
 	request = new XMLHttpRequest();
 	url = window.location.protocol + "//" + window.location.host + "/coordinates";
@@ -54,9 +52,7 @@ function buildCoordinatesJSON(position) {
 		, 'timestamp': timestamp
     };
 
-    j = JSON.stringify(c);
-    console.log(j);
-	sendCurrentLocation(j);
+	sendCurrentLocation(c);
 }
 
 // Thanks, Terin, for this useful tip.
@@ -75,12 +71,15 @@ function formatTimestamp(dt) {
 }
 
 function sendCurrentLocation(coords) {
+    jsonCoordinates = JSON.stringify(coords);
     request = new XMLHttpRequest();
-    updatedAt = new Date(coords.timestamp);
 	url = window.location.protocol + "//" + window.location.host + "/coordinates";
 	request.open('POST', url, false);
-	request.send(coords);
-	message.innerHTML = "Location updated at " + Date.now(coords.timestamp).toLocaleString('en-GB', localeStringOptions);
+	request.send(jsonCoordinates);
+
+    updatedAt = new Date(coords.timestamp);
+    // South Africa is apparently the only en- locale that uses a sane time format?
+	message.innerHTML = "Location updated at " + updatedAt.toLocaleString('en-ZA', localeStringOptions);
 	getCurrentPosition();
 }
 
