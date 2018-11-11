@@ -24,7 +24,7 @@
             request = new XMLHttpRequest();
             url = window.location.protocol + "//" + window.location.host + "/coordinates";
             request.open('GET', url, false);
-            request.setRequestHeader('content-type', 'text/plain');
+            request.setRequestHeader('accept', 'text/plain');
             request.send();
             currentLocation.innerHTML = request.responseText;
         }
