@@ -7,7 +7,7 @@ import           Data.SecureMem
 import qualified Location.API                  as API
 import qualified Location.DB                   as DB
 import qualified Network.Wai.Handler.Warp      as Warp
-import Network.Wai.Middleware.Cors
+import           Network.Wai.Middleware.Cors
 import           Network.Wai.Middleware.HttpAuth
 import           Network.Wai.Middleware.RequestLogger
 import qualified System.Environment            as Env
@@ -32,13 +32,14 @@ main = do
   conn <- DB.setupDatabase
   user <- getUser
   putStrLn $ "User: " ++ user
+  password <- API.getAuthPassword
   port <- getPort
   scotty port $ do
     middleware logStdoutDev
     middleware simpleCors
     middleware $ basicAuth
       (\u p ->
-        return $ u == pack user && secureMemFromByteString p == API.authPassword
+        return $ u == pack user && secureMemFromByteString p == password
       )
       "Where am I?"
     get "/" $ API.staticPage "static/index.html"

@@ -17,7 +17,6 @@ import qualified Database.SQLite.Simple        as SQLite
 import           GHC.Generics
 import qualified Location.Core                 as Core
 import qualified Location.DB                   as DB
-import           System.IO.Unsafe               ( unsafePerformIO )
 import qualified System.Posix.Env.ByteString   as Env
 import           Web.Scotty
 
@@ -44,10 +43,8 @@ instance ToJSON Response where
 
 instance FromJSON Response
 
-authPassword :: SecureMem
-authPassword = secureMemFromByteString . unsafePerformIO $ Env.getEnvDefault
-  "WHEREAMI_PASS"
-  "password"
+getAuthPassword :: IO SecureMem
+getAuthPassword = Env.getEnvDefault "WHEREAMI_PASS" "password" >>= return . secureMemFromByteString 
 
 getCoordinates :: SQLite.Connection -> ActionM ()
 getCoordinates conn = do
