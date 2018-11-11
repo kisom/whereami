@@ -6,5 +6,5 @@ ADD . 	/whereami
 WORKDIR /whereami
 RUN stack build
 
-ENTRYPOINT [ "stack" ]
+ENTRYPOINT [ "./run.sh" ]
 CMD [ "run" ]
