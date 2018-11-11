@@ -10,7 +10,9 @@ import           Data.Aeson                     ( FromJSON
                                                 , toEncoding
                                                 )
 import           Data.SecureMem
-import           Data.Text.Lazy                 ( pack )
+import           Data.Text.Lazy                 ( pack
+                                                , Text
+                                                )
 import qualified Database.SQLite.Simple        as SQLite
 import           GHC.Generics
 import qualified Location.Core                 as Core
@@ -18,6 +20,18 @@ import qualified Location.DB                   as DB
 import           System.IO.Unsafe               ( unsafePerformIO )
 import qualified System.Posix.Env.ByteString   as Env
 import           Web.Scotty
+
+contentType :: Text
+contentType = "Content-Type"
+
+contentHTML :: Text
+contentHTML = "text/html"
+
+contentJSON :: Text
+contentJSON = "application/json"
+
+contentText :: Text
+contentText = "text/plain"
 
 data Response = Response
   { success      :: Bool
@@ -37,11 +51,11 @@ authPassword = secureMemFromByteString . unsafePerformIO $ Env.getEnvDefault
 
 getCoordinates :: SQLite.Connection -> ActionM ()
 getCoordinates conn = do
-  contentType <- header "CONTENT-TYPE"
+  contentType <- header contentType
   case contentType of
-    Just "application/json" -> getCoordinatesJSON conn
-    Just "text/plain"       -> getCoordinatesText conn
-    _                       -> getCoordinatesHTML conn
+    Just contentJSON -> getCoordinatesJSON conn
+    Just contentText -> getCoordinatesText conn
+    _                -> getCoordinatesHTML conn
 
 getCoordinatesJSON :: SQLite.Connection -> ActionM ()
 getCoordinatesJSON conn = do
@@ -67,3 +81,6 @@ postCoordinates conn = do
 
 notFound :: ActionM ()
 notFound = json $ Response False "route not found" Nothing
+
+staticPage :: FilePath -> ActionM ()
+staticPage path = setHeader contentType contentText >> (file path)

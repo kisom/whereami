@@ -39,7 +39,7 @@ main = do
         return $ u == pack user && secureMemFromByteString p == API.authPassword
       )
       "Where am I?"
-    get "/" $ file "static/index.html"
+    get "/" $ API.staticPage "static/index.html"
     get "/coordinates" $ API.getCoordinates conn
     post "/coordinates" $ API.postCoordinates conn
     notFound $ API.notFound
