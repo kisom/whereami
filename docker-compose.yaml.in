@@ -4,7 +4,7 @@ services:
   whereami:
     build:
       context: .
-    image: whereami:0.1.0.0
+    image: whereami:1.0.0.0
     ports:
       - "8003:8003"
     environment:
