@@ -42,8 +42,11 @@ function buildCoordinatesJSON(position) {
 	if (altitude == null) {
 		altitude = 0;
 	}
-	
-	timestamp = parseInt(Date.now().toFixed());
+
+    timestamp = position.timestamp;
+    if ((timestamp == 0) || (timestamp == null)) {
+        timestamp = parseInt(Date.now().toFixed());
+    }
 	
 	c = {
 		'latitude': coords.latitude
