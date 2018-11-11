@@ -73,10 +73,6 @@ getCoordinatesHTML :: SQLite.Connection -> ActionM ()
 getCoordinatesHTML conn = do
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   file "page.html"
-    -- build page
-
-debugPrint :: String -> ()
-debugPrint s = unsafePerformIO $ putStrLn s
 
 postCoordinates :: SQLite.Connection -> ActionM ()
 postCoordinates conn = do
