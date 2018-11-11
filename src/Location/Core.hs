@@ -10,10 +10,7 @@ import           Data.Aeson                     ( FromJSON
                                                 )
 import           Database.SQLite.Simple.FromRow
 import           Database.SQLite.Simple.ToRow
-import           Data.Time.Zones.DB (TZLabel( America__Los_Angeles ))
 import           GHC.Generics
-
-
 
 northOrSouth :: Double -> String
 northOrSouth d = if d >= 0 then "N" else "S"
@@ -28,16 +25,16 @@ data Coordinates = Coordinates
 
   -- Note: the UTC offset should be stored in the database as well, but for now
   -- I'm going to keep this as is.
-  -- , timestamp :: Int 
+  , timestamp :: Int
   } deriving (Generic, Read)
 
 instance Show Coordinates where
-  show (Coordinates lat lon alt) =
+  show (Coordinates lat lon alt timestamp) =
     (show $ abs lat) ++
     "°" ++
     (northOrSouth lat) ++
     ", " ++
-    (show $ abs lon) ++ "°" ++ (eastOrWest lon) ++ " @ " ++ (show alt) ++ "m"
+    (show $ abs lon) ++ "°" ++ (eastOrWest lon) ++ " @ " ++ (show alt) ++ "m " ++ (show timestamp)
 
 instance ToJSON Coordinates where
   toEncoding = genericToEncoding defaultOptions
@@ -45,13 +42,19 @@ instance ToJSON Coordinates where
 instance FromJSON Coordinates
 
 instance FromRow Coordinates where
-  fromRow = Coordinates <$> field <*> field <*> field
+  fromRow = Coordinates <$> field <*> field <*> field <*> field
 
 instance ToRow Coordinates where
-  toRow (Coordinates lat lon alt) = toRow (lat, lon, alt)
+  toRow (Coordinates lat lon alt timestamp) = toRow (lat, lon, alt, timestamp)
 
+-- The following are some useful test structures.
 emptyCoordinates :: Coordinates
-emptyCoordinates = Coordinates 0.0 0.0 0.0
+emptyCoordinates = Coordinates 0.0 0.0 0.0 0
 
 oaklandCoordinates :: Coordinates
-oaklandCoordinates = Coordinates 37.8044 (-122.2711) 13.0
+oaklandCoordinates = Coordinates 37.8044 (-122.2711) 13.0 0
+
+-- This was failing because of a non-exhaustive match in the DB module.
+failingJSON :: String
+failingJSON
+  = "{\"latitude\":37.80608,\"longitude\":-122.2598656,\"altitude\":0,\"timestamp\":1541921713851}"

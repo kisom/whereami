@@ -20,6 +20,8 @@ import qualified Location.DB                   as DB
 import qualified System.Posix.Env.ByteString   as Env
 import           Web.Scotty
 
+import           System.IO.Unsafe               ( unsafePerformIO )
+
 contentType :: Text
 contentType = "Content-Type"
 
@@ -61,22 +63,22 @@ getCoordinates conn = do
 
 getCoordinatesJSON :: SQLite.Connection -> ActionM ()
 getCoordinatesJSON conn = do
-  liftAndCatchIO $ putStrLn "getCoordinatesJSON"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   json $ Response True "" (Just coordinates)
 
 getCoordinatesText :: SQLite.Connection -> ActionM ()
 getCoordinatesText conn = do
-  liftAndCatchIO $ putStrLn "getCoordinatesText"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   text . pack $ show coordinates
 
 getCoordinatesHTML :: SQLite.Connection -> ActionM ()
 getCoordinatesHTML conn = do
-  liftAndCatchIO $ putStrLn "getCoordinatesHTML"
   coordinates <- liftAndCatchIO $ DB.getCoordinates conn
   file "page.html"
     -- build page
+
+debugPrint :: String -> ()
+debugPrint s = unsafePerformIO $ putStrLn s
 
 postCoordinates :: SQLite.Connection -> ActionM ()
 postCoordinates conn = do

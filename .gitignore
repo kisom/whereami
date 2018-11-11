@@ -1,3 +1,5 @@
 .stack-work/
 whereami.cabal
 *~
+whereami.db
+docker-compose.yaml
