@@ -38,9 +38,16 @@ function setupUpdates() {
 
 function buildCoordinatesJSON(position) {
 	coords = position.coords;
+
+ 	// Altitude and altitude accuracy are optional fields; 0 is a reasonable
+ 	// default right now for these.
 	altitude = coords.altitude;
 	if (altitude == null) {
 		altitude = 0;
+	}
+	altitudeAccuracy = coords.altitudeAccuracy;
+	if (altitudeAccuracy == null) {
+		altitudeAccuracy = 0;
 	}
 
     timestamp = position.timestamp;
@@ -53,7 +60,8 @@ function buildCoordinatesJSON(position) {
 		, 'longitude': coords.longitude
 		, 'altitude': altitude
         , 'timestamp': timestamp
-        , 'accuracy': coords.accuracy
+		, 'accuracy': coords.accuracy
+		, 'altitudeAccuracy': altitudeAccuracy
     };
 
 	sendCurrentLocation(c);

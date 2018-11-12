@@ -18,9 +18,10 @@ northOrSouth d = if d >= 0 then "N" else "S"
 eastOrWest :: Double -> String
 eastOrWest d = if d >= 0 then "E" else "W"
 
-showAccuracy :: Double -> String
-showAccuracy acc =
-  if acc <= 0 then "(no accuracy data)" else "within " ++ (show acc) ++ "m"
+showAccuracy :: Double -> String -> String
+showAccuracy acc label = if acc <= 0
+  then "(no accuracy data for " ++ label ++ ")"
+  else label ++ " within " ++ (show acc) ++ "m"
 
 data Coordinates = Coordinates
   { latitude  :: Double
@@ -33,15 +34,19 @@ data Coordinates = Coordinates
 
   -- Finding out that this is useful. Note that -1.0 is used to mean "accuracy not given."
   , accuracy :: Double
+  , altitudeAccuracy :: Double
   } deriving (Generic, Read)
 
 instance Show Coordinates where
-  show (Coordinates lat lon alt timestamp acc) =
+  show (Coordinates lat lon alt timestamp gacc aacc) =
     (show $ abs lat) ++
     "°" ++
     (northOrSouth lat) ++
     ", " ++
-    (show $ abs lon) ++ "°" ++ (eastOrWest lon) ++ " @ " ++ (show alt) ++ "m " ++ (showAccuracy acc)
+    (show $ abs lon) ++ "°" ++ (eastOrWest lon) ++ " " ++
+    (showAccuracy gacc "position") ++
+    " @ " ++ (show alt) ++ "m " ++
+    (showAccuracy aacc "altitude")
 
 instance ToJSON Coordinates where
   toEncoding = genericToEncoding defaultOptions
@@ -49,19 +54,24 @@ instance ToJSON Coordinates where
 instance FromJSON Coordinates
 
 instance FromRow Coordinates where
-  fromRow = Coordinates <$> field <*> field <*> field <*> field <*> field
+  fromRow = Coordinates <$> field -- latitude
+                        <*> field -- longitude
+                        <*> field -- altitude
+                        <*> field -- timestamp
+                        <*> field -- accuracy
+                        <*> field -- altitudeAccuracy
 
 instance ToRow Coordinates where
-  toRow (Coordinates lat lon alt timestamp acc) = toRow (lat, lon, alt, timestamp, acc)
+  toRow (Coordinates lat lon alt timestamp gacc aacc) = toRow (lat, lon, alt, timestamp, gacc, aacc)
 
 -- getAccuracy
 
 -- The following are some useful test structures.
 emptyCoordinates :: Coordinates
-emptyCoordinates = Coordinates 0.0 0.0 0.0 0 0
+emptyCoordinates = Coordinates 0.0 0.0 0.0 0 0 0.0
 
 oaklandCoordinates :: Coordinates
-oaklandCoordinates = Coordinates 37.8044 (-122.2711) 13.0 0 0
+oaklandCoordinates = Coordinates 37.8044 (-122.2711) 13.0 0 0 0.0
 
 -- This was failing because of a non-exhaustive match in the DB module.
 failingJSON :: String
