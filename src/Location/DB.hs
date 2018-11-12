@@ -24,22 +24,24 @@ setupDatabase = do
   conn     <- SQLite.open database
   SQLite.execute_
     conn
-    "CREATE TABLE IF NOT EXISTS whereami (id INTEGER PRIMARY KEY AUTOINCREMENT, lat REAL, lon REAL, alt REAL, timestamp INTEGER NOT NULL);"
+    "CREATE TABLE IF NOT EXISTS whereami (id INTEGER PRIMARY KEY AUTOINCREMENT, lat REAL, lon REAL, alt REAL, timestamp INTEGER NOT NULL, accuracy REAL);"
   return conn
 
 coordinatesWithTimestamp :: Core.Coordinates -> IO Core.Coordinates
-coordinatesWithTimestamp (Core.Coordinates lat lon alt 0) = do
+coordinatesWithTimestamp (Core.Coordinates lat lon alt 0 acc) = do
   timestamp <- getTimestamp
-  return $ Core.Coordinates lat lon alt timestamp
+  return $ Core.Coordinates lat lon alt timestamp acc
 coordinatesWithTimestamp c = return c
 
 -- followup: https://hackage.haskell.org/package/sqlite-simple-0.4.16.0/docs/Database-SQLite-Simple.html
 storeCoordinates :: SQLite.Connection -> Core.Coordinates -> IO ()
 storeCoordinates conn c = do
+  putStrLn "some shit is about to go down"
   coords <- coordinatesWithTimestamp c
+  putStrLn "some shit went down"
   SQLite.execute
     conn
-    "INSERT INTO whereami (lat, lon, alt, timestamp) VALUES (?, ?, ?, ?)"
+    "INSERT INTO whereami (lat, lon, alt, timestamp, accuracy) VALUES (?, ?, ?, ?, ?)"
     coords
 
 getCoordinates :: SQLite.Connection -> IO Core.Coordinates
@@ -47,7 +49,7 @@ getCoordinates conn = do
   r <-
     SQLite.query_
       conn
-      "SELECT lat, lon, alt, timestamp FROM whereami ORDER BY timestamp DESC LIMIT 1;" :: IO
+      "SELECT lat, lon, alt, timestamp, accuracy FROM whereami ORDER BY timestamp DESC LIMIT 1;" :: IO
       [Core.Coordinates]
   return $ coordinateResult r
  where

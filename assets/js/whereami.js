@@ -52,7 +52,8 @@ function buildCoordinatesJSON(position) {
 		'latitude': coords.latitude
 		, 'longitude': coords.longitude
 		, 'altitude': altitude
-		, 'timestamp': timestamp
+        , 'timestamp': timestamp
+        , 'accuracy': coords.accuracy
     };
 
 	sendCurrentLocation(c);
