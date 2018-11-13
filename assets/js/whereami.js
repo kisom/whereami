@@ -89,6 +89,8 @@ function sendCurrentLocation(coords) {
 	request.open('POST', url, false);
 	request.send(jsonCoordinates);
 
+	// TODO: add error checking to the request.
+
     updatedAt = new Date(coords.timestamp);
     // South Africa is apparently the only en- locale that uses a sane time format?
 	message.innerHTML = "Location updated at " + updatedAt.toLocaleString('en-ZA', localeStringOptions);
