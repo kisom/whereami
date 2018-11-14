@@ -3,7 +3,7 @@ CREATE TABLE whereami IF NOT EXISTS (
 	lat			REAL,
 	lon			REAL,
 	alt			REAL,
-	timestamp		TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	timestamp		INTEGER NOT NULL,
 	accuracy		REAL DEFAULT 0.0,
 	altitude_accuracy	REAL DEFAULT 0.0
 );
