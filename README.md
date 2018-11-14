@@ -13,6 +13,16 @@ myself to get exactly what I want to fit my security model and whatnot.
 
 There's an unimplemented test suite that Stack setup for me that I haven't touched.
 
+## The stack
+
+The stack currently used is
+
++ Haskell (Scotty/Warp/WAI, sqlite-simple, and aeson) for the backend
++ POJS and HTML for the frontend (there's no CSS at the moment)
++ SQLite3 for the database
++ Stackage for the build system, although there's a Makefile for convenience
++ Docker and docker-compose for deployment
+
 ## Dependencies
 
 On Ubuntu, install `haskell-stack`.
